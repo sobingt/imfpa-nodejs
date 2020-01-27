@@ -110,6 +110,7 @@
             idTdElement.innerHTML = "";
             var aTag = document.createElement('a');
             aTag.setAttribute('href', "https://imfpa.org/wp-admin/post.php?post="+id+"&action=edit");
+             aTag.setAttribute('target', "_blank");
             aTag.innerText = id;
             idTdElement.appendChild(aTag);
 
