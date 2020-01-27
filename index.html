@@ -166,7 +166,7 @@
         }
         function getId(sku) {
             var http = new XMLHttpRequest();
-            var url = 'http://localhost:8081/';
+            var url = '/';
             var params = JSON.stringify({ sku });
             http.open('POST', url, true);
 
@@ -183,7 +183,7 @@
 
         function createVariationRequest(data) {
             var http = new XMLHttpRequest();
-            var url = 'http://localhost:8081/';
+            var url = '/';
             var params = JSON.stringify(data);
             http.open('POST', url, true);
 
