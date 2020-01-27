@@ -173,6 +173,10 @@
             element.onclick = function () { // Note this is a function
                 var product = createPreVariationObject(data);
                 createVariationRequest(product)
+                var skuElem = document.getElementsByClassName(data.sku)[0];
+                skuElem.getElementsByTagName('td')[5].innerHTML = "";
+                skuElem.getElementsByTagName('td')[6].innerHTML = "Please wait. The request is send.";
+
             };
             return element;
             //var foo = document.getElementById("fooBar");
