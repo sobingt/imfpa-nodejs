@@ -1,0 +1,338 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="apple-touch-icon" type="image/png"
+        href="https://static.codepen.io/assets/favicon/apple-touch-icon-5ae1a0698dcc2402e9712f7d01ed509a57814f994c660df9f7a952f3060705ee.png">
+    <meta name="apple-mobile-web-app-title" content="CodePen">
+    <link rel="shortcut icon" type="image/x-icon"
+        href="https://static.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico">
+    <link rel="mask-icon" type=""
+        href="https://static.codepen.io/assets/favicon/logo-pin-8f3771b1072e3c38bd662872f6b673a722f4b3ca2421637d5596661b4e2132cc.svg"
+        color="#111">
+    <title>Form</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .bs-example {
+            padding: 50px;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+
+        var round = Math.round;
+        Math.round = function (value, decimals) {
+            decimals = decimals || 0;
+            return Number(round(value + 'e' + decimals) + 'e-' + decimals);
+        }
+        function createPreVariationObject(data) {
+            var product = {};
+            product.sku = data.sku;
+            product.id = data.id;
+            product.w1 = 30;
+            product.w2 = 40;
+            product.w3 = 50;
+            product.w4 = 60;
+            product.w5 = 70;
+            product.w6 = 80;
+
+            product.h1 = Math.round((data.meta_data.h / data.meta_data.w) * 30, 2);
+            product.h2 = Math.round((data.meta_data.h / data.meta_data.w) * 40, 2);
+            product.h3 = Math.round((data.meta_data.h / data.meta_data.w) * 50, 2);
+            product.h4 = Math.round((data.meta_data.h / data.meta_data.w) * 60, 2);
+            product.h5 = Math.round((data.meta_data.h / data.meta_data.w) * 70, 2);
+            product.h6 = Math.round((data.meta_data.h / data.meta_data.w) * 80, 2);
+            return product;
+        }
+
+        function tableCreate() {
+            var body = document.getElementsByClassName('bs-example')[0];
+            var tbl = document.createElement('table');
+            tbl.className = "table";
+            tbl.style.width = '100%';
+            tbl.setAttribute('border', '1');
+            var arrayStr = createSKU();
+            var thead = document.createElement('thead');
+            var thArray = ['SKU', 'ID', 'Width', 'Height', 'Variation', 'Action', 'Status']
+            var tr = document.createElement('tr');
+            for (var x = 0; x < thArray.length; x++) {
+                var th = document.createElement('th');
+                th.appendChild(document.createTextNode(thArray[x]));
+                tr.appendChild(th);
+            }
+            thead.appendChild(tr);
+            tbl.appendChild(thead);
+
+            var tbdy = document.createElement('tbody');
+
+            for (var i = 0; i < arrayStr.length; i++) {
+                var tr = document.createElement('tr');
+                tr.className = arrayStr[i];
+                for (var j = 0; j < thArray.length; j++) {
+                    if (arrayStr[i] == "") break;
+                    var td = document.createElement('td');
+                    td.className = "value";
+                    if (j == 0) td.appendChild(document.createTextNode(arrayStr[i]));
+                    if (j == 1) td.appendChild(document.createTextNode(""));
+                    if (j >= 2) {
+                        var span = document.createElement('b');
+                        span.appendChild(document.createTextNode("-"));
+                        td.appendChild(span);
+                    }
+                    tr.appendChild(td)
+                }
+                tbdy.appendChild(tr);
+            }
+
+            tbl.appendChild(tbdy);
+            body.appendChild(tbl)
+        }
+        function createSKU() {
+            var data = $('#skus').val().split('\n');
+            for (var y = 0; y < data.length; y++) {
+                if (data[y] != "")
+                    getId(data[y]);
+            }
+            return data;
+        }
+        function updateTable(data) {
+            data = JSON.parse(data);
+            var sku = data.sku;
+            var id = data.id;
+            var variations = data.variations;
+            var skuElem = document.getElementsByClassName(sku)[0];
+            var idTdElement = skuElem.getElementsByTagName('td')[1]
+            var widthTdElement = skuElem.getElementsByTagName('td')[2]
+            var heightTdElement = skuElem.getElementsByTagName('td')[3]
+            var variationTdElement = skuElem.getElementsByTagName('td')[4]
+            idTdElement.innerHTML = "";
+            idTdElement.appendChild(document.createTextNode(id));
+
+            variationTdElement.innerHTML = "";
+            variationTdElement.appendChild(document.createTextNode(variations.length));
+
+            widthTdElement.innerHTML = "";
+            widthTdElement.appendChild(document.createTextNode(data.meta_data.w));
+
+            heightTdElement.innerHTML = "";
+            heightTdElement.appendChild(document.createTextNode(data.meta_data.h));
+
+            skuElem.getElementsByTagName('td')[5].innerHTML = "";
+            skuElem.getElementsByTagName('td')[5].appendChild(addButton(data));
+            skuElem.getElementsByTagName('td')[6].innerHTML = "got product id and ready for adding variation.";
+        }
+
+        function updateVariationTable(data) {
+            data = JSON.parse(data).data;
+            var sku = data[0].sku;
+            var skuElem = document.getElementsByClassName(sku)[0];
+            //var thArray = ['SKU', 'ID1', 'Width2', 'Height3', 'Variation4', 'Action5', 'Status']
+            var idTdElement = skuElem.getElementsByTagName('td')[1]
+            var widthTdElement = skuElem.getElementsByTagName('td')[2]
+            var heightTdElement = skuElem.getElementsByTagName('td')[3]
+            var variationTdElement = skuElem.getElementsByTagName('td')[4]
+
+            variationTdElement.innerHTML = "";
+            variationTdElement.appendChild(document.createTextNode(data.length));
+
+            // widthTdElement.innerHTML = "";
+            // widthTdElement.appendChild(document.createTextNode(data.meta_data.w));
+
+            // heightTdElement.innerHTML = "";
+            // heightTdElement.appendChild(document.createTextNode(data.meta_data.h));
+
+            skuElem.getElementsByTagName('td')[5].innerHTML = "";
+            //skuElem.getElementsByTagName('td')[5].appendChild(addButton(data));
+            skuElem.getElementsByTagName('td')[6].innerHTML = "Variation Added.";
+        }
+        function addButton(data) {
+            //Create an input type dynamically.   
+            var element = document.createElement("input");
+            //Assign different attributes to the element. 
+            element.type = "button";
+            element.value = "Add variation";
+            element.className = "btn btn-secondary";
+            element.name = data.sku; // And the name too?
+            element.onclick = function () { // Note this is a function
+                var product = createPreVariationObject(data);
+                createVariationRequest(product)
+            };
+            return element;
+            //var foo = document.getElementById("fooBar");
+            //Append the element in page (in span).  
+            //foo.appendChild(element);
+        }
+        function getId(sku) {
+            var http = new XMLHttpRequest();
+            var url = 'http://localhost:8081/';
+            var params = JSON.stringify({ sku });
+            http.open('POST', url, true);
+
+            //Send the proper header information along with the request
+            //http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            http.setRequestHeader("Content-Type", "application/json");
+            http.onreadystatechange = function () {//Call a function when the state changes.
+                if (http.readyState == 4 && http.status == 200) {
+                    updateTable(http.responseText);
+                }
+            }
+            http.send(params);
+        }
+
+        function createVariationRequest(data) {
+            var http = new XMLHttpRequest();
+            var url = 'http://localhost:8081/';
+            var params = JSON.stringify(data);
+            http.open('POST', url, true);
+
+            //Send the proper header information along with the request
+            //http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            http.setRequestHeader("Content-Type", "application/json");
+
+            http.onreadystatechange = function () {//Call a function when the state changes.
+                if (http.readyState == 4 && http.status == 200) {
+                    updateVariationTable(http.responseText);
+                }
+            }
+            http.send(params);
+        }
+
+    </script>
+</head>
+
+<body translate="no">
+    <div class="bs-example">
+        <h1 class="border-bottom pb-3 mb-4">Add Variation</h1>
+        <form class="needs-validation" novalidate="">
+            <!-- <div class="form-group row">
+                <label class="col-sm-3 col-form-label" for="firstName">First Name:</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="firstName" placeholder="First Name" required="">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-3 col-form-label" for="lastName">Last Name:</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="lastName" placeholder="Last Name" required="">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-3 col-form-label" for="inputEmail">Email Address:</label>
+                <div class="col-sm-9">
+                    <input type="email" class="form-control" id="inputEmail" placeholder="Email Address" required="">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-3 col-form-label" for="phoneNumber">Mobile Number:</label>
+                <div class="col-sm-9">
+                    <input type="number" class="form-control" id="phoneNumber" placeholder="Phone Number" required="">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Date of Birth:</label>
+                <div class="col-sm-3">
+                    <select class="custom-select" required="">
+                        <option value="">Date</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                        <option value="21">21</option>
+                        <option value="22">22</option>
+                        <option value="23">23</option>
+                        <option value="24">24</option>
+                        <option value="25">25</option>
+                        <option value="26">26</option>
+                        <option value="27">27</option>
+                        <option value="28">28</option>
+                        <option value="29">29</option>
+                        <option value="30">30</option>
+                        <option value="31">31</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <select class="custom-select" required="">
+                        <option value="">Month</option>
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <select class="custom-select">
+                        <option>Year</option>
+                    </select>
+                </div>
+            </div> -->
+            <div class="form-group row">
+                <label class="col-sm-3 col-form-label" for="skus">SKU:</label>
+                <div class="col-sm-9">
+                    <textarea rows="3" class="form-control" id="skus" placeholder="SKU Lists" required=""></textarea>
+                </div>
+            </div>
+            <!-- <div class="form-group row">
+                <label class="col-sm-3 col-form-label" for="ZipCode">Zip Code:</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="ZipCode" placeholder="Zip Code" required="">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Gender:</label>
+                <div class="col-sm-9 mt-2">
+                    <label class="mb-0 mr-3">
+                        <input type="radio" class="mr-1" name="gender"> Male
+                    </label>
+                    <label class="mb-0 mr-3">
+                        <input type="radio" class="mr-1" name="gender"> Female
+                    </label>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-9 offset-sm-3">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" class="mr-1" value="agree"> I agree to the <a href="#">Terms and
+                            Conditions</a>.
+                    </label>
+                </div>
+            </div> -->
+            <div class="form-group row">
+                <div class="col-sm-9 offset-sm-3">
+                    <input type="button" class="btn btn-primary" onclick="tableCreate();" value="Submit">
+                    <input type="reset" class="btn btn-secondary" value="Reset">
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+
+</body>
+
+</html>
