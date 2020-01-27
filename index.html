@@ -119,9 +119,24 @@
             heightTdElement.innerHTML = "";
             heightTdElement.appendChild(document.createTextNode(data.meta_data.h));
 
-            skuElem.getElementsByTagName('td')[5].innerHTML = "";
-            skuElem.getElementsByTagName('td')[5].appendChild(addButton(data));
-            skuElem.getElementsByTagName('td')[6].innerHTML = "got product id and ready for adding variation.";
+            if (variations.length == 0) {
+                skuElem.getElementsByTagName('td')[5].innerHTML = "";
+                skuElem.getElementsByTagName('td')[5].appendChild(addButton(data));
+                skuElem.getElementsByTagName('td')[6].innerHTML = "got product id and ready for adding variation.";
+            } else if (variations.length > 0 && variations.length < 66) {
+                skuElem.getElementsByTagName('td')[5].innerHTML = "";
+                //skuElem.getElementsByTagName('td')[5].appendChild(addButton(data));
+                skuElem.getElementsByTagName('td')[6].innerHTML = "There has to be only 66 variation. Please delete all variation and add again.";
+            } else if (variations.length == 66) {
+                skuElem.getElementsByTagName('td')[5].innerHTML = "";
+                //skuElem.getElementsByTagName('td')[5].appendChild(addButton(data));
+                skuElem.getElementsByTagName('td')[6].innerHTML = "All variation are added.";
+            } else if ( variations.length > 66) {
+                skuElem.getElementsByTagName('td')[5].innerHTML = "";
+                //skuElem.getElementsByTagName('td')[5].appendChild(addButton(data));
+                skuElem.getElementsByTagName('td')[6].innerHTML = "There has to be only 66 variation. Please delete all variation and add again.";
+            }
+
         }
 
         function updateVariationTable(data) {
