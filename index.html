@@ -108,7 +108,10 @@
             var heightTdElement = skuElem.getElementsByTagName('td')[3]
             var variationTdElement = skuElem.getElementsByTagName('td')[4]
             idTdElement.innerHTML = "";
-            idTdElement.appendChild(document.createTextNode(id));
+            var aTag = document.createElement('a');
+            aTag.setAttribute('href', "https://imfpa.org/wp-admin/post.php?post="+id+"&action=edit");
+            aTag.innerText = id;
+            idTdElement.appendChild(aTag);
 
             variationTdElement.innerHTML = "";
             variationTdElement.appendChild(document.createTextNode(variations.length));
