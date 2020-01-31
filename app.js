@@ -60,6 +60,10 @@ app.get("/", function(req, res) {
   res.sendFile(path.join(__dirname + "/index.html"));
 });
 
+app.get("/limited", function(req, res) {
+  res.sendFile(path.join(__dirname + "/limited.html"));
+});
+
 var server = app.listen(PORT, function() {
   var host = server.address().address;
   var port = server.address().port;
