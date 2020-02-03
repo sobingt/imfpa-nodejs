@@ -65,14 +65,14 @@ app.post("/limited", function(req, res, next) {
   console.log(req.body);
   if (req.body.id && req.body.sku) {
     var newVariation = createWrapProductVariation(req.body);
-    res.json({
-      data: newVariation
-    });
-    // createVariationRequest(newVariation, function(logs) {
-    //   res.json({
-    //     data: logs
-    //   });
+    // res.json({
+    //   data: newVariation
     // });
+    createVariationRequest(newVariation, function(logs) {
+      res.json({
+        data: logs
+      });
+    });
   } else if (req.body.sku) {
     variation.getProductBySKU(req.body.sku, function(response) {
       console.log(response.data[0].meta_data);
