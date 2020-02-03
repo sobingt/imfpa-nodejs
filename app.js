@@ -183,10 +183,10 @@ function createWrapProductVariation(product) {
           let price = variation.getWrapVariationPrice(
             size.w,
             size.h,
-            req.body.canvasCost,
-            req.body.wrapCost
+            product.minCanvasCost,
+            product.maxCanvasCost,
+            product.wrapCost
           );
-          let image = ''
           let description = `Painting Size: ${size.w} cm x ${size.h} cm`;
           let data = variation.getProductWrapVariation({
             description,
@@ -194,7 +194,6 @@ function createWrapProductVariation(product) {
             price,
             width: size.w,
             height: size.h,
-            image
           });
           //console.log(count, data)
           variations.push(data);

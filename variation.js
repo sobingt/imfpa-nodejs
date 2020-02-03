@@ -8,20 +8,14 @@ const api = new WooCommerceRestApi({
 });
 
 exports.getProductWrapVariation = function(data) {
-  const {
-    description,
-    price,
-    width,
-    height,
-    image,
-  } = data;
+  const { sku, description, price, width, height} = data;
   const paintingSize = `${width} cm x ${height} cm`;
   return {
     description: `${description}`,
     price: `${price}`,
     regular_price: `${price}`,
     image: {
-      src: `${image}`
+      src: `https://s3.ap-south-1.amazonaws.com/imfpa.org/paintings/${sku}_800-White-Wrap.jpg`
     },
     dimensions: {
       length: "",
@@ -37,7 +31,6 @@ exports.getProductWrapVariation = function(data) {
     ]
   };
 };
-
 
 exports.getProductVariation = function(data) {
   const {
@@ -216,13 +209,26 @@ exports.getProductVariationPrice = function(
   return roundUp(totalPaintingCost + totalFrameCost + totalMattCost, 2);
 };
 
-exports.getWrapVariationPrice = function(w, h, paintingCost , wrapCost ) {
-  paintingCost = paintingCost || 34;
+exports.getWrapVariationPrice = function(
+  w,
+  h,
+  minPaintingCost,
+  maxPaintingCost,
+  wrapCost
+) {
+  if (w < 60) {
+    paintingCost = minPaintingCost || 34;
+  } else {
+    paintingCost = maxPaintingCost || 34;
+  }
   wrapCost = wrapCost || 10;
+  console.log(paintingCost);
+  console.log(w);
+  console.log(wrapCost);
   w = w / 2.54;
   h = h / 2.54;
   const paintingPerimeter = 2 * w + 2 * h;
-  const totalPaintingCost = paintingPerimeter * paintingCost;
+  const totalPaintingCost = ((w * h) / 144) * paintingCost;
   const totalWrapCost = paintingPerimeter * wrapCost;
   return roundUp(totalPaintingCost + totalWrapCost, 2);
 };
