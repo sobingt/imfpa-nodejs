@@ -129,7 +129,7 @@
                 skuElem.getElementsByTagName('td')[6].innerHTML = "got product id and ready for adding variation.";
             } else if (variations.length > 0 && variations.length < 66) {
                 skuElem.getElementsByTagName('td')[5].innerHTML = "";
-                //skuElem.getElementsByTagName('td')[5].appendChild(addButton(data));
+                skuElem.getElementsByTagName('td')[5].appendChild(addButton(data));
                 skuElem.getElementsByTagName('td')[6].innerHTML = "There has to be only 66 variation. Please delete all variation and add again.";
             } else if (variations.length == 66) {
                 skuElem.getElementsByTagName('td')[5].innerHTML = "";
@@ -176,6 +176,8 @@
             element.name = data.sku; // And the name too?
             element.onclick = function () { // Note this is a function
                 var product = createPreVariationObject(data);
+                product.canvasCost = Number(document.getElementById('canvasCost').value);
+                product.wrapCost = Number(document.getElementById('wrapCost').value);
                 createVariationRequest(product)
                 var skuElem = document.getElementsByClassName(data.sku)[0];
                 skuElem.getElementsByTagName('td')[5].innerHTML = "";
@@ -206,7 +208,7 @@
 
         function createVariationRequest(data) {
             var http = new XMLHttpRequest();
-            var url = '/';
+            var url = '/limited';
             var params = JSON.stringify(data);
             http.open('POST', url, true);
 
@@ -318,6 +320,18 @@
                 <label class="col-sm-3 col-form-label" for="skus">SKU:</label>
                 <div class="col-sm-9">
                     <textarea rows="3" class="form-control" id="skus" placeholder="SKU Lists" required=""></textarea>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-3 col-form-label" for="canvasCost">Canvas Cost:</label>
+                <div class="col-sm-9">
+                    <input type="number" class="form-control" id="canvasCost" placeholder="Canvas Cost" value=34 required="" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-3 col-form-label" for="wrapCost">Wrap Cost:</label>
+                <div class="col-sm-9">
+                    <input type="number" class="form-control" id="wrapCost" placeholder="Wrap Cost" value=7 required=""/>
                 </div>
             </div>
             <!-- <div class="form-group row">

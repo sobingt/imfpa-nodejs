@@ -7,6 +7,38 @@ const api = new WooCommerceRestApi({
   version: "wc/v3"
 });
 
+exports.getProductWrapVariation = function(data) {
+  const {
+    description,
+    price,
+    width,
+    height,
+    image,
+  } = data;
+  const paintingSize = `${width} cm x ${height} cm`;
+  return {
+    description: `${description}`,
+    price: `${price}`,
+    regular_price: `${price}`,
+    image: {
+      src: `${image}`
+    },
+    dimensions: {
+      length: "",
+      width: `${width}`,
+      height: `${height}`
+    },
+    attributes: [
+      {
+        id: 0,
+        name: "Painting Size",
+        option: `${paintingSize}`
+      }
+    ]
+  };
+};
+
+
 exports.getProductVariation = function(data) {
   const {
     description,
@@ -173,15 +205,6 @@ exports.getProductVariationPrice = function(
 ) {
   w = w / 2.54;
   h = h / 2.54;
-  console.log({
-    w,
-    h,
-    matt,
-    frameSize,
-    paintingCost,
-    mattCost,
-    frameCost
-  });
 
   const paintingPerimeter = 2 * w + 2 * h;
   const paintingMattPerimeter = 2 * (matt + w) + 2 * (matt + h);
@@ -190,17 +213,18 @@ exports.getProductVariationPrice = function(
   const totalMattCost = paintingMattPerimeter * mattCost;
   const totalPaintingCost = paintingPerimeter * paintingCost;
   const totalFrameCost = paintingFramePerimeter * frameCost;
-  return roundUp(totalPaintingCost + totalFrameCost + totalMattCost, 3);
+  return roundUp(totalPaintingCost + totalFrameCost + totalMattCost, 2);
 };
 
-exports.getWrapVariationPrice = function(w, h) {
-  paintingCost = 34;
+exports.getWrapVariationPrice = function(w, h, paintingCost , wrapCost ) {
+  paintingCost = paintingCost || 34;
+  wrapCost = wrapCost || 10;
   w = w / 2.54;
   h = h / 2.54;
   const paintingPerimeter = 2 * w + 2 * h;
   const totalPaintingCost = paintingPerimeter * paintingCost;
-  const totalWrapCost = paintingPerimeter * 10;
-  return roundUp(totalPaintingCost + totalWrapCost, 3);
+  const totalWrapCost = paintingPerimeter * wrapCost;
+  return roundUp(totalPaintingCost + totalWrapCost, 2);
 };
 
 exports.getCanvasPrintVariationPrice = function(w, h) {
@@ -210,7 +234,7 @@ exports.getCanvasPrintVariationPrice = function(w, h) {
   const paintingPerimeter = 2 * w + 2 * h;
   const totalPaintingCost = paintingPerimeter * paintingCost;
   const totalWrapCost = 0;
-  return roundUp(totalPaintingCost + totalWrapCost, 3);
+  return roundUp(totalPaintingCost + totalWrapCost, 2);
 };
 
 function roundUp(num, precision) {
@@ -218,4 +242,4 @@ function roundUp(num, precision) {
   return Math.ceil(num * precision) / precision;
 }
 
-roundUp(192.168, 3); //=> 192.2
+roundUp(192.168, 2); //=> 192.2

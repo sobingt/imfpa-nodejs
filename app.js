@@ -20,10 +20,16 @@ app.use(bodyParser.json());
 app.use(nocache());
 //support parsing of application/x-www-form-urlencoded post data
 app.use(bodyParser.urlencoded({ extended: true }));
+app.get("/paintings/:id", function (req, res) {
+  variation.getProductVariations(req.params.id, function(data) {
+    res.json(data);
+  });
+
+});
 app.post("/", function(req, res, next) {
   console.log(req.body);
   if (req.body.id && req.body.sku) {
-     var newVariation = createAllProductVariation(req.body);
+    var newVariation = createAllProductVariation(req.body);
     // res.json({
     //   data: newVariation
     // });
@@ -55,7 +61,41 @@ app.post("/", function(req, res, next) {
     });
   }
 });
-
+app.post("/limited", function(req, res, next) {
+  console.log(req.body);
+  if (req.body.id && req.body.sku) {
+    var newVariation = createWrapProductVariation(req.body);
+    res.json({
+      data: newVariation
+    });
+    // createVariationRequest(newVariation, function(logs) {
+    //   res.json({
+    //     data: logs
+    //   });
+    // });
+  } else if (req.body.sku) {
+    variation.getProductBySKU(req.body.sku, function(response) {
+      console.log(response.data[0].meta_data);
+      response.data[0].meta_data.forEach(data => {
+        if (data.key == "image_width") {
+          w = Number(data.value);
+        }
+        if (data.key == "image_height") {
+          h = Number(data.value);
+        }
+      });
+      res.json({
+        sku: response.data[0].sku,
+        id: response.data[0].id,
+        variations: response.data[0].variations,
+        meta_data: {
+          w,
+          h
+        }
+      });
+    });
+  }
+});
 app.get("/", function(req, res) {
   res.sendFile(path.join(__dirname + "/index.html"));
 });
@@ -70,6 +110,102 @@ var server = app.listen(PORT, function() {
 
   console.log("Example app listening at http://%s:%s", host, port);
 });
+
+function createWrapProductVariation(product) {
+  const paintingTypeArray = ["Canvas Print"];
+  const paintingFormatArray = ["Wrap"];
+  const colorArray = ["No"];
+  const canvasFrameColorArray = ["Black", "Brown", "Natural"];
+  const paperFrameColorArray = [
+
+  ];
+
+  const mattCost = 15;
+  const frameCostArray = {
+    "Canvas Print": {
+      Wrap: 7
+    }
+  };
+
+  let count = 0;
+  let variations = [];
+  const sizeStrArray = [
+    `${product.w1} cm x ${product.h1} cm`,
+    `${product.w2} cm x ${product.h2} cm`,
+    `${product.w3} cm x ${product.h3} cm`,
+    `${product.w4} cm x ${product.h4} cm`,
+    `${product.w5} cm x ${product.h5} cm`,
+    `${product.w6} cm x ${product.h6} cm`
+  ];
+  const sizeArray = [
+    { w: product.w1, h: product.h1 },
+    { w: product.w2, h: product.h2 },
+    { w: product.w3, h: product.h3 },
+    { w: product.w4, h: product.h4 },
+    { w: product.w5, h: product.h5 },
+    { w: product.w6, h: product.h6 }
+  ];
+  const sku = product.sku;
+  const id = product.id;
+  for (
+    let paintingTypeCount = 0;
+    paintingTypeCount < paintingTypeArray.length;
+    paintingTypeCount++
+  ) {
+    let paintingType = paintingTypeArray[paintingTypeCount];
+    let frameColorArray;
+    let paintingTypeCost;
+    let frameSize;
+    frameColorArray = canvasFrameColorArray;
+    paintingTypeCost = 34;
+    frameSize = 0.5;
+
+    //Select Painting Type
+    for (let sizeCount = 0; sizeCount < sizeArray.length; sizeCount++) {
+      let size = sizeArray[sizeCount];
+      let matt;
+      if (size.w == 30) {
+        matt = 1;
+      } else if (size.w == 40) {
+        matt = 1;
+      } else if (size.w == 50) {
+        matt = 2;
+      } else if (size.w == 60) {
+        matt = 2;
+      } else if (size.w == 70) {
+        matt = 3;
+      } else if (size.w == 80) {
+        matt = 3;
+      }
+          let frameColor = "No";
+          let frameCost = 7;
+
+          let price = variation.getWrapVariationPrice(
+            size.w,
+            size.h,
+            req.body.canvasCost,
+            req.body.wrapCost
+          );
+          let image = ''
+          let description = `Painting Size: ${size.w} cm x ${size.h} cm`;
+          let data = variation.getProductWrapVariation({
+            description,
+            sku,
+            price,
+            width: size.w,
+            height: size.h,
+            image
+          });
+          //console.log(count, data)
+          variations.push(data);
+    }
+  }
+
+  return {
+    id,
+    variations
+  };
+}
 
 function createAllProductVariation(product) {
   const paintingTypeArray = ["Paper Print", "Canvas Print"];
@@ -246,7 +382,11 @@ function createVariationRequest(data, callback) {
   variation.postCreatBulkProductVariations(data.id, entry, function(response) {
     console.log(response);
     var logs = [];
-    for (let responseIndex = 0; responseIndex < response.data.create.length; responseIndex++) {
+    for (
+      let responseIndex = 0;
+      responseIndex < response.data.create.length;
+      responseIndex++
+    ) {
       var log = {
         sku: response.data.create[responseIndex].sku,
         description: response.data.create[responseIndex].description,
