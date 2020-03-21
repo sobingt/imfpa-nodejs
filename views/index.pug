@@ -10,7 +10,12 @@ html(lang="en")
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     var json = JSON.parse(xhr.responseText);
-                    console.log(json);
+                    console.log(json.data.update);
+                    if(json.data.update.length>0)
+                    {
+                        document.getElementsByClassName('next')[0].click();
+                    }
+
                 }
             };
             var body = JSON.stringify(data);
@@ -57,9 +62,9 @@ html(lang="en")
         |  paintings without images.
     p
         if(parseInt(page) > 1) 
-            a(href='/update-painting-image?page='+previous+'&limit='+limit) Previous Page
+            a(href='/update-painting-image?page='+previous+'&limit='+limit class="previous") Previous Page
         | 
-        a(href='/update-painting-image?page='+next+'&limit='+limit) Next Page
+        a(href='/update-painting-image?page='+next+'&limit='+limit class="next") Next Page
     ol
         each val in data.data
             if(val.images.length == 0)
