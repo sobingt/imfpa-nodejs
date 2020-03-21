@@ -103,7 +103,7 @@ app.post("/limited", function(req, res, next) {
 app.get("/", function(req, res) {
   res.sendFile(path.join(__dirname + "/index.html"));
 });
-app.get("/painting", function(req, res) {
+app.get("/update-painting-image", function(req, res) {
   console.log(req.query);
   variation.getProductList(
     {
