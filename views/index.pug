@@ -53,7 +53,7 @@ html(lang="en")
         You are current in page #{page}. Click on Next Page to go to the next page and Previous Page to go previous Page. 
         Click on Update Bulk Image with update paintings with images. Make sure you have upload the painting images in AWS S3.
     p Page #{page} with #{per_page} painting per page.
-    button(onclick='bulkUpdateImage()') Update Bulk Images
+    button(onclick='bulkUpdateImage()' class="btn btn-primary") Update Bulk Images
     - var previous = parseInt(page)==1 ? parseInt(page) : parseInt(page)-1
     - var next = parseInt(page)+1
     - var limit = parseInt(per_page)
@@ -76,3 +76,4 @@ html(lang="en")
 
     script(type='text/javascript').
         document.getElementsByClassName('noOfPainting')[0].innerText = document.getElementsByClassName('product').length + ' ';
+        document.getElementsByClassName('btn')[0].click();
