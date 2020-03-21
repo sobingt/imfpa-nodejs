@@ -37,27 +37,29 @@ html(lang="en")
           
         }
   body
-    h1 Pug - node template engine
+    h1 List of paintings with no featured image
     #container.col
       if youAreUsingPug
         p You are amazing
       else
         p Get on it!
       p.
-        Pug is a terse and simple templating language with a
-        strong focus on performance and powerful features.
-    p Product Lenght is #{data.data.length} 
-    p Page #{page} limit #{per_page}
-    button(onclick='bulkUpdateImage()') Update Images
+        The System loops from start of painting list with #{per_page} painting per page. 
+        You are current in page #{page}. Click on Next Page to go to the next page and Previous Page to go previous Page. 
+        Click on Update Bulk Image with update paintings with images. Make sure you have upload the painting images in AWS S3.
+    p Page #{page} with #{per_page} painting per page.
+    button(onclick='bulkUpdateImage()') Update Bulk Images
     - var previous = parseInt(page)==1 ? parseInt(page) : parseInt(page)-1
     - var next = parseInt(page)+1
     - var limit = parseInt(per_page)
-    p previous #{previous} 
+    p There are 
+        span( class="noOfPainting") 0 
+        |  paintings without images.
     p
         if(parseInt(page) > 1) 
-            a(href='/painting?page='+previous+'&limit='+limit) Previous Page
+            a(href='/update-painting-image?page='+previous+'&limit='+limit) Previous Page
         | 
-        a(href='/painting?page='+next+'&limit='+limit) Next Page
+        a(href='/update-painting-image?page='+next+'&limit='+limit) Next Page
     ol
         each val in data.data
             if(val.images.length == 0)
@@ -66,3 +68,6 @@ html(lang="en")
                 ul
                     each image in val.images
                         li= image.src
+
+    script(type='text/javascript').
+        document.getElementsByClassName('noOfPainting')[0].innerText = document.getElementsByClassName('product').length + ' ';
