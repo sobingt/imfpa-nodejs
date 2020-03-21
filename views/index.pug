@@ -76,4 +76,14 @@ html(lang="en")
 
     script(type='text/javascript').
         document.getElementsByClassName('noOfPainting')[0].innerText = document.getElementsByClassName('product').length + ' ';
-        document.getElementsByClassName('btn')[0].click();
+        if(document.getElementsByClassName('product'))
+        {
+            if(document.getElementsByClassName('product').length > 0)
+            {
+                document.getElementsByClassName('btn')[0].click();
+            }
+            else if(document.getElementsByClassName('product').length == 0)
+            {
+                document.getElementsByClassName('next')[0].click();
+            }
+        }
