@@ -6,6 +6,11 @@ const path = require("path");
 const variation = require("./variation");
 const WooCommerceRestApi = require("@woocommerce/woocommerce-rest-api").default;
 const PORT = process.env.PORT || 5000;
+const pug = require("pug");
+app.use(express.static(path.join(__dirname, "public")));
+// set views path, template engine and default layout
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "pug");
 
 const api = new WooCommerceRestApi({
   url: "https://imfpa.org",
@@ -20,11 +25,10 @@ app.use(bodyParser.json());
 app.use(nocache());
 //support parsing of application/x-www-form-urlencoded post data
 app.use(bodyParser.urlencoded({ extended: true }));
-app.get("/paintings/:id", function (req, res) {
+app.get("/paintings/:id", function(req, res) {
   variation.getProductVariations(req.params.id, function(data) {
     res.json(data);
   });
-
 });
 app.post("/", function(req, res, next) {
   console.log(req.body);
@@ -99,11 +103,45 @@ app.post("/limited", function(req, res, next) {
 app.get("/", function(req, res) {
   res.sendFile(path.join(__dirname + "/index.html"));
 });
-
+app.get("/painting", function(req, res) {
+  console.log(req.query);
+  variation.getProductList(
+    {
+      catId: 156,
+      per_page: req.query.limit || 10,
+      page: req.query.page || 1
+    },
+    function(data) {
+      res.render("index", {
+        data: data,
+        per_page: req.query.limit || 10,
+        page: req.query.page || 1
+      });
+    }
+  );
+});
 app.get("/limited", function(req, res) {
   res.sendFile(path.join(__dirname + "/limited.html"));
 });
-
+app.post("/update-painting-image", function(req, res) {
+  const data = {
+    update: req.body
+  };
+  api
+    .post("products/batch", data)
+    .then(response => {
+      console.log(response.data);
+      res.json({
+        data: response.data
+      });
+    })
+    .catch(error => {
+      console.log(error.response.data);
+      res.json({
+        data: error.response.data
+      });
+    });
+});
 var server = app.listen(PORT, function() {
   var host = server.address().address;
   var port = server.address().port;
@@ -116,9 +154,7 @@ function createWrapProductVariation(product) {
   const paintingFormatArray = ["Wrap"];
   const colorArray = ["No"];
   const canvasFrameColorArray = ["Black", "Brown", "Natural"];
-  const paperFrameColorArray = [
-
-  ];
+  const paperFrameColorArray = [];
 
   const mattCost = 15;
   const frameCostArray = {
@@ -177,26 +213,26 @@ function createWrapProductVariation(product) {
       } else if (size.w == 80) {
         matt = 3;
       }
-          let frameColor = "No";
-          let frameCost = 7;
+      let frameColor = "No";
+      let frameCost = 7;
 
-          let price = variation.getWrapVariationPrice(
-            size.w,
-            size.h,
-            product.minCanvasCost,
-            product.maxCanvasCost,
-            product.wrapCost
-          );
-          let description = `Painting Size: ${size.w} cm x ${size.h} cm`;
-          let data = variation.getProductWrapVariation({
-            description,
-            sku,
-            price,
-            width: size.w,
-            height: size.h,
-          });
-          //console.log(count, data)
-          variations.push(data);
+      let price = variation.getWrapVariationPrice(
+        size.w,
+        size.h,
+        product.minCanvasCost,
+        product.maxCanvasCost,
+        product.wrapCost
+      );
+      let description = `Painting Size: ${size.w} cm x ${size.h} cm`;
+      let data = variation.getProductWrapVariation({
+        description,
+        sku,
+        price,
+        width: size.w,
+        height: size.h
+      });
+      //console.log(count, data)
+      variations.push(data);
     }
   }
 

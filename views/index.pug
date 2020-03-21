@@ -1,0 +1,68 @@
+doctype html
+html(lang="en")
+  head
+    title= pageTitle
+    script(type='text/javascript').
+        function ajaxPost(url, data){
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var json = JSON.parse(xhr.responseText);
+                    console.log(json);
+                }
+            };
+            var body = JSON.stringify(data);
+            xhr.send(body);
+
+        }
+      function bulkUpdateImage(){ 
+          console.log(document.getElementsByClassName('product').length);
+          var data = [];
+          for(var i=0; i<document.getElementsByClassName('product').length;i++)
+          {
+            data.push({
+                id: document.getElementsByClassName('product')[i].getAttribute('data-id'),
+                images: [
+                    { 
+                        src: `https://s3.ap-south-1.amazonaws.com/imfpa.org/paintings/${document.getElementsByClassName('product')[i].getAttribute('data-sku')}_800.jpg`
+                    }
+                ]
+            })
+            //console.log(document.getElementsByClassName('product')[i].getAttribute('data-id'))
+          }
+          console.log(data);
+          ajaxPost('/update-painting-image', data)
+          
+        }
+  body
+    h1 Pug - node template engine
+    #container.col
+      if youAreUsingPug
+        p You are amazing
+      else
+        p Get on it!
+      p.
+        Pug is a terse and simple templating language with a
+        strong focus on performance and powerful features.
+    p Product Lenght is #{data.data.length} 
+    p Page #{page} limit #{per_page}
+    button(onclick='bulkUpdateImage()') Update Images
+    - var previous = parseInt(page)==1 ? parseInt(page) : parseInt(page)-1
+    - var next = parseInt(page)+1
+    - var limit = parseInt(per_page)
+    p previous #{previous} 
+    p
+        if(parseInt(page) > 1) 
+            a(href='/painting?page='+previous+'&limit='+limit) Previous Page
+        | 
+        a(href='/painting?page='+next+'&limit='+limit) Next Page
+    ol
+        each val in data.data
+            if(val.images.length == 0)
+                li
+                   a(href=val.permalink class='product' data-sku=val.sku data-id=val.id ) ID #{val.id} - #{val.sku} - #{val.name}
+                ul
+                    each image in val.images
+                        li= image.src
