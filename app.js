@@ -104,21 +104,29 @@ app.get("/", function(req, res) {
   res.sendFile(path.join(__dirname + "/index.html"));
 });
 app.get("/update-painting-image", function(req, res) {
-  console.log(req.query);
-  variation.getProductList(
-    {
-      catId: 156,
-      per_page: req.query.limit || 10,
-      page: req.query.page || 1
-    },
-    function(data) {
-      res.render("index", {
-        data: data,
-        per_page: req.query.limit || 10,
-        page: req.query.page || 1
-      });
-    }
-  );
+  if (req.query.limit && req.query.page && req.query.catId) {
+    variation.getProductList(
+      {
+        catId: parseInt(req.query.catId), //catId: 156, 218
+        per_page: parseInt(req.query.limit) || 10,
+        page: parseInt(req.query.page) || 1
+      },
+      function(data) {
+        console.log(data);
+        res.render("index", {
+          data: data,
+          catId: parseInt(req.query.catId), //catId: 156, 218
+          per_page: parseInt(req.query.limit) || 10,
+          page: parseInt(req.query.page) || 1
+        });
+      }
+    );
+    //console.log(req.query.limit + " " + req.query.page + " " + req.query.catId);
+    //res.render("detail");
+  } else {
+    res.render("detail");
+  }
+
 });
 app.get("/limited", function(req, res) {
   res.sendFile(path.join(__dirname + "/limited.html"));

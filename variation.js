@@ -108,10 +108,11 @@ exports.getProductList = function(data, callback) {
     .then(response => {
       callback({
         data: response.data,
-        message: "Variations Added"
+        message: "Get Products"
       });
     })
     .catch(error => {
+      console.log(error);
       callback({
         data: {
           id: id,
