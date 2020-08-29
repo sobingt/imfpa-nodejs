@@ -2,8 +2,8 @@ const WooCommerceRestApi = require("@woocommerce/woocommerce-rest-api").default;
 
 const api = new WooCommerceRestApi({
   url: "https://imfpa.org",
-  consumerKey: "ck_3e0d5ca94b209bc85ddbba909625317c0f0e7371",
-  consumerSecret: "cs_0dd2cb97c1b7104826bcca4a7730b0042cb25864",
+  consumerKey: "ck_f5d71b7ed9edbd6dee006343031b55296ee98a1d",
+  consumerSecret: "cs_d8dbac9a6e06a6943fd088b75d16a77cd1cb3211",
   version: "wc/v3"
 });
 
