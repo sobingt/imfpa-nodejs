@@ -134,9 +134,10 @@ exports.getProductBySKU = function(sku, callback) {
       });
     })
     .catch(error => {
+    console.log(error);
       callback({
         data: {
-          id: id,
+          id: 1,
           data: {},
           error: error
         },
