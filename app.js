@@ -13,9 +13,9 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
 
 const api = new WooCommerceRestApi({
-  url: "https://imfpa.org",
-  consumerKey: "ck_3e0d5ca94b209bc85ddbba909625317c0f0e7371",
-  consumerSecret: "cs_0dd2cb97c1b7104826bcca4a7730b0042cb25864",
+   url: "https://startupmumbai.org/",
+  consumerKey: "ck_57a4b973e7a41f3b8355ae85ebda3a187530c051",
+  consumerSecret: "cs_4b73182a6361acb13a70c2c54b9f3477cb842f60",
   version: "wc/v3"
 });
 
