@@ -44,7 +44,8 @@ app.post("/", function(req, res, next) {
     });
   } else if (req.body.sku) {
     variation.getProductBySKU(req.body.sku, function(response) {
-      console.log(response.data[0].meta_data);
+
+      // console.log(response.data[0].meta_data);
       response.data[0].meta_data.forEach(data => {
         if (data.key == "image_width") {
           w = Number(data.value);

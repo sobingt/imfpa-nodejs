@@ -134,6 +134,7 @@ exports.getProductBySKU = function(sku, callback) {
       });
     })
     .catch(error => {
+      console.log("error");
     console.log(error);
       callback({
         data: {
